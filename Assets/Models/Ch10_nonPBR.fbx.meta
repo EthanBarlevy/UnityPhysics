@@ -1,59 +1,9 @@
 fileFormatVersion: 2
-guid: d60a6cc7f33a8dd4ca080072fa4beace
+guid: 07d2b7a89ea475246a4634437a8a147b
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ch10_body
-    second: {fileID: 2100000, guid: 11399a965204ed94696974990874cf1b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ch10_body1
-    second: {fileID: 2100000, guid: fdf5dd6ffd76ea749b1e7e3815019c0b, type: 2}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1001_Diffuse
-    second: {fileID: 2800000, guid: b01c6ec9764f3a84fbb95bd9bdb79d24, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1001_Glossiness
-    second: {fileID: 2800000, guid: 92152000d5d44fc4e9c525ae0e53de0f, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1001_Normal
-    second: {fileID: 2800000, guid: 5575cb8c9be20d14f94c0e4006d36300, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1001_Specular
-    second: {fileID: 2800000, guid: 6ba8f4f6676817541b931fca87e3c4b2, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1002_Diffuse
-    second: {fileID: 2800000, guid: 8c46edffa17669e498710da0f51c506c, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1002_Glossiness
-    second: {fileID: 2800000, guid: 36c5cfc8d75c4ca4081eef62b071aedb, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1002_Normal
-    second: {fileID: 2800000, guid: 9965e79d3ca02594aaac45fa7766208b, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Ch10_1002_Specular
-    second: {fileID: 2800000, guid: 5f9c1f9d2dceda9478d723c3425e1736, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -74,7 +24,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -141,13 +91,13 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 1
+    hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
-  animationType: 3
+  animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
