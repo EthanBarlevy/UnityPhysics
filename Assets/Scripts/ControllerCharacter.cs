@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Search;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -9,43 +10,54 @@ public class ControllerCharacter : MonoBehaviour
 	[SerializeField] float turnRate;
 	[SerializeField] float jumpHeight;
 	[SerializeField] float hitForce;
-
+	[Header("Ground")]
+	[SerializeField] Transform groundTransform;
+	[SerializeField] LayerMask groundLayerMask;
 	CharacterController characterController;
 	Vector3 velocity = Vector3.zero;
-
 	void Start()
 	{
 		characterController = GetComponent<CharacterController>();
 	}
-
 	void Update()
 	{
+		// check if the character is on the ground
+		bool onGround = Physics.CheckSphere(groundTransform.position, 0.2f, groundLayerMask, QueryTriggerInteraction.Ignore);
 		// get direction input
 		Vector3 direction = Vector3.zero;
 		direction.x = Input.GetAxis("Horizontal");
 		direction.z = Input.GetAxis("Vertical");
-
 		// set velocity
-		if (characterController.isGrounded)
+		if (onGround)
 		{
 			velocity.x = direction.x * speed;
 			velocity.z = direction.z * speed;
 			if (velocity.y < 0) velocity.y = 0;
 			if (Input.GetButtonDown("Jump"))
 			{
-				velocity.y += Mathf.Sqrt(jumpHeight * -2 * Physics.gravity.y);
+				velocity.y += Mathf.Sqrt(jumpHeight * - 2 * Physics.gravity.y);
 			}
 		}
-
 		velocity.y += Physics.gravity.y * Time.deltaTime;
-
 		// move character
 		characterController.Move(velocity * Time.deltaTime);
-
+		// rotate character to face direction of movement (velocity)
 		Vector3 face = new Vector3(velocity.x, 0, velocity.z);
 		if (face.magnitude > 0)
-		{ 
+		{
 			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(face), Time.deltaTime * turnRate);
+		}
+	}
+
+	IEnumerator DoubleJump()
+	{ 
+		yield return new WaitForSeconds(0.01f);
+		while (velocity.y > 0)
+		{
+			if (Input.GetButtonDown("Jump"))
+			{
+				//velocity.y += Mathf.Sqrt(doubleJumpHeight * -2 * Physics.gravity.y);
+			}
 		}
 	}
 
