@@ -5,9 +5,13 @@ using UnityEngine;
 
 public class ControllerCharacter2D : MonoBehaviour
 {
+	[SerializeField] Animator animator;
+	[SerializeField] SpriteRenderer spriteRenderer;
+
 	[SerializeField] float speed;
 	[SerializeField] float turnRate;
 	[SerializeField] float jumpHeight;
+	[SerializeField] float doubleJumpHeight;
 	[SerializeField] float hitForce;
 	[Header("Ground")]
 	[SerializeField] Transform groundTransform;
@@ -15,10 +19,12 @@ public class ControllerCharacter2D : MonoBehaviour
 
 	Rigidbody2D rb;
 	Vector2 velocity = Vector2.zero;
+	bool faceRight = true;
 	void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
 	}
+
 	void Update()
 	{
 		// check if the character is on the ground
@@ -38,14 +44,21 @@ public class ControllerCharacter2D : MonoBehaviour
 			{
 				velocity.y += Mathf.Sqrt(jumpHeight * - 2 * Physics.gravity.y);
 				StartCoroutine(DoubleJump());
+				animator.SetTrigger("Jump");
 			}
 		}
+		float gravityMultiplier = 1;
 		velocity.y += Physics.gravity.y * Time.deltaTime;
 
 		// move character
 		rb.velocity = velocity;
 
-		// rotate character to face direction of movement (velocity)
+		// flip character to face direction of movement (velocity)
+		if (velocity.x > 0 && !faceRight) Flip();
+		if (velocity.x < 0 && faceRight) Flip();
+
+		// update animator
+		animator.SetFloat("Speed", Mathf.Abs(velocity.x));
 	}
 
 	IEnumerator DoubleJump()
@@ -60,5 +73,11 @@ public class ControllerCharacter2D : MonoBehaviour
 			}
 			yield return null;
 		}
+	}
+
+	private void Flip()
+	{ 
+		faceRight = !faceRight;
+		spriteRenderer.flipX = !faceRight;
 	}
 }
