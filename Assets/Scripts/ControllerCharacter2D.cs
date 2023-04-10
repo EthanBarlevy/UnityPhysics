@@ -9,10 +9,9 @@ public class ControllerCharacter2D : MonoBehaviour
 	[SerializeField] SpriteRenderer spriteRenderer;
 
 	[SerializeField] float speed;
-	[SerializeField] float turnRate;
 	[SerializeField] float jumpHeight;
 	[SerializeField] float doubleJumpHeight;
-	[SerializeField] float hitForce;
+	[SerializeField, Range(1, 5)] float fallRateMultiplier;
 	[Header("Ground")]
 	[SerializeField] Transform groundTransform;
 	[SerializeField] LayerMask groundLayerMask;
