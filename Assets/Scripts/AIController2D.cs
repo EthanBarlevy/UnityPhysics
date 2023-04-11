@@ -89,12 +89,6 @@ public class AIController2D : MonoBehaviour
 		if (onGround)
 		{
 			if (velocity.y < 0) velocity.y = 0;
-			if (Input.GetButtonDown("Jump"))
-			{
-				velocity.y += Mathf.Sqrt(jumpHeight * - 2 * Physics.gravity.y);
-				StartCoroutine(DoubleJump());
-				animator.SetTrigger("Jump");
-			}
 		}
 		float gravityMultiplier = 1;
 		velocity.y += Physics.gravity.y * Time.deltaTime;
