@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Search;
 using UnityEngine;
 
-public class AIController2D : MonoBehaviour
+public class AIController2D : MonoBehaviour, IDamagable
 {
 	[SerializeField] Animator animator;
 	[SerializeField] SpriteRenderer spriteRenderer;
@@ -20,24 +20,29 @@ public class AIController2D : MonoBehaviour
 	[Header("AI")]
 	[SerializeField] Transform[] waypoints;
 	[SerializeField] float sightDistance = 1;
+	[SerializeField] string enemyTag;
+	[SerializeField] LayerMask raycastLayerMask;
 
+	public float health = 100;
 
 	Rigidbody2D rb;
 	Vector2 velocity = Vector2.zero;
 	bool faceRight = true;
 	float groundAngle = 0;
 	Transform targetWaypoint = null;
+	GameObject enemy = null;
 
 	enum State
 	{ 
 		IDLE,
 		PATROL,
 		CHASE,
-		ATTACK
+		ATTACK,
+		DEAD
 	}
 
 	State state = State.IDLE;
-	float stateTimer = 0;
+	float stateTimer = 1;
 
 	void Start()
 	{
@@ -46,37 +51,70 @@ public class AIController2D : MonoBehaviour
 
 	void Update()
 	{
+		CheckEnemySeen();
 		Vector2 direction = Vector2.zero;
 
 		// update ai
 		switch (state)
 		{
 			case State.IDLE:
-				if (CanSeePlayer()) state = State.CHASE;
-				stateTimer += Time.deltaTime;
-				if (stateTimer > 1)
+				if (enemy != null) state = State.CHASE;
+				stateTimer -= Time.deltaTime;
+				if (stateTimer <= 0)
 				{
 					SetNewWaypointTarget();
 					state = State.PATROL;
-				} 
+				}
 				break;
 			case State.PATROL:
-				if (CanSeePlayer()) state = State.CHASE;
-				direction.x = Mathf.Sign(targetWaypoint.position.x - transform.position.x);
-				float dx = Mathf.Abs(targetWaypoint.position.x - transform.position.x);
-				if (dx <= 0.25f)
-				{
-					stateTimer = 0;
-					state = State.PATROL;
+				{ 
+					if (enemy != null) state = State.CHASE;
+					direction.x = Mathf.Sign(targetWaypoint.position.x - transform.position.x);
+					float dx = Mathf.Abs(targetWaypoint.position.x - transform.position.x);
+					if (dx <= 0.25f)
+					{
+						stateTimer = 1;
+						state = State.IDLE;
+					}
 				}
 				break;
 			case State.CHASE:
-
+				{
+					if (enemy == null)
+					{
+						state = State.IDLE;
+						stateTimer = 1;
+						break;
+					}
+					float dx = Mathf.Abs(enemy.transform.position.x - transform.position.x);
+					if (dx <= 1f)
+					{
+						state = State.ATTACK;
+						animator.SetTrigger("Attack");
+					}
+					else
+					{
+						direction.x = Mathf.Sign(enemy.transform.position.x - transform.position.x);
+					}
+				}
 				break;
 			case State.ATTACK:
+				if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !animator.IsInTransition(0))
+				{
+					state = State.CHASE;
+				}
+				break;
+			case State.DEAD:
+				animator.SetTrigger("Death");
 				break;
 			default:
 				break;
+		}
+
+		// check health
+		if (health <= 0)
+		{
+			state = State.DEAD;
 		}
 
 		// check if the character is on the ground
@@ -141,11 +179,20 @@ public class AIController2D : MonoBehaviour
 		targetWaypoint = waypoint;
 	}
 
-	private bool CanSeePlayer()
+	private void CheckEnemySeen()
 	{
-		RaycastHit2D hit = Physics2D.Raycast(transform.position, ((faceRight) ? Vector2.right : Vector2.left) * sightDistance);
-		Debug.DrawRay(transform.position, ((faceRight) ? Vector2.right : Vector2.left) * sightDistance);
+		enemy = null;
+		RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, ((faceRight) ? Vector2.right : Vector2.left), sightDistance, raycastLayerMask);
+		if (raycastHit.collider != null && raycastHit.collider.gameObject.CompareTag(enemyTag))
+		{
+			enemy = raycastHit.collider.gameObject;
+			Debug.DrawRay(transform.position, ((faceRight) ? Vector2.right : Vector2.left) * sightDistance, Color.red);
+		}
+	}
 
-		return hit.collider != null && hit.collider.gameObject.CompareTag("Player");
+	public void Damage(int damageAmount)
+	{
+		health -= damageAmount;
+		print(health);
 	}
 }

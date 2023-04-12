@@ -12,10 +12,14 @@ public class ControllerCharacter2D : MonoBehaviour
 	[SerializeField] float jumpHeight;
 	[SerializeField] float doubleJumpHeight;
 	[SerializeField, Range(1, 5)] float fallRateMultiplier;
+	[SerializeField, Range(1, 5)] float lowJumpRateMultiplier;
 	[Header("Ground")]
 	[SerializeField] Transform groundTransform;
 	[SerializeField] LayerMask groundLayerMask;
 	[SerializeField] float groundRadius;
+	[Header("Attack")]
+	[SerializeField] Transform attackLocation;
+	[SerializeField] float attackRadius;
 
 	Rigidbody2D rb;
 	Vector2 velocity = Vector2.zero;
@@ -46,6 +50,10 @@ public class ControllerCharacter2D : MonoBehaviour
 				StartCoroutine(DoubleJump());
 				animator.SetTrigger("Jump");
 			}
+			if(Input.GetMouseButtonDown(0)) 
+			{
+				animator.SetTrigger("Attack");
+			}
 		}
 		velocity.y += Physics.gravity.y * fallRateMultiplier * Time.deltaTime;
 
@@ -68,10 +76,24 @@ public class ControllerCharacter2D : MonoBehaviour
 		{
 			if (Input.GetButtonDown("Jump"))
 			{
-				//velocity.y += Mathf.Sqrt(doubleJumpHeight * -2 * Physics.gravity.y);
+				velocity.y += Mathf.Sqrt(doubleJumpHeight * -2 * Physics.gravity.y);
 				break;
 			}
 			yield return null;
+		}
+	}
+
+	private void CheckAttack()
+	{
+		Collider2D[] colliders = Physics2D.OverlapCircleAll(attackLocation.position, attackRadius);
+		foreach (Collider2D collider in colliders)
+		{
+			if (collider.gameObject == gameObject) continue;
+
+			if (collider.gameObject.TryGetComponent<IDamagable>(out var damagable))
+			{
+				damagable.Damage(30);
+			}
 		}
 	}
 
