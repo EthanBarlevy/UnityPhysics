@@ -58,41 +58,41 @@ public class AIController2D : MonoBehaviour, IDamagable
 		switch (state)
 		{
 			case State.IDLE:
-				if (enemy != null) state = State.CHASE;
+				if (enemy != null) state = State.CHASE; // go to chase state if enemy has been seen
 				stateTimer -= Time.deltaTime;
 				if (stateTimer <= 0)
 				{
-					SetNewWaypointTarget();
+					SetNewWaypointTarget(); // select a waypoint after 
 					state = State.PATROL;
 				}
 				break;
 			case State.PATROL:
 				{ 
-					if (enemy != null) state = State.CHASE;
-					direction.x = Mathf.Sign(targetWaypoint.position.x - transform.position.x);
-					float dx = Mathf.Abs(targetWaypoint.position.x - transform.position.x);
-					if (dx <= 0.25f)
+					if (enemy != null) state = State.CHASE; // go to chase state if enemy has been seen
+					direction.x = Mathf.Sign(targetWaypoint.position.x - transform.position.x); // move to waypoint location
+					float dx = Mathf.Abs(targetWaypoint.position.x - transform.position.x); 
+					if (dx <= 0.25f) // once at a waypoint
 					{
-						stateTimer = 1;
+						stateTimer = 1; // go back to idle state
 						state = State.IDLE;
 					}
 				}
 				break;
 			case State.CHASE:
 				{
-					if (enemy == null)
+					if (enemy == null) // if enemy is no longer seen
 					{
-						state = State.IDLE;
+						state = State.IDLE; // go to idle state
 						stateTimer = 1;
 						break;
 					}
 					float dx = Mathf.Abs(enemy.transform.position.x - transform.position.x);
-					if (dx <= 1f)
+					if (dx <= 1f) // if we are close to the enemy
 					{
-						state = State.ATTACK;
+						state = State.ATTACK; // attack the enemy
 						animator.SetTrigger("Attack");
 					}
-					else
+					else // otherwise go to the enemy
 					{
 						direction.x = Mathf.Sign(enemy.transform.position.x - transform.position.x);
 					}
@@ -101,11 +101,11 @@ public class AIController2D : MonoBehaviour, IDamagable
 			case State.ATTACK:
 				if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !animator.IsInTransition(0))
 				{
-					state = State.CHASE;
+					state = State.CHASE; // once the animation is done, go back to chase state
 				}
 				break;
 			case State.DEAD:
-				animator.SetTrigger("Death");
+				animator.SetTrigger("Death"); // if health is zero start death animation
 				break;
 			default:
 				break;
@@ -156,18 +156,21 @@ public class AIController2D : MonoBehaviour, IDamagable
 		}
 	}
 
+	// flip the sprite 
 	private void Flip()
 	{ 
 		faceRight = !faceRight;
 		spriteRenderer.flipX = !faceRight;
 	}
 
+	// draw the sphere for colliding with the ground
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.red;
 		Gizmos.DrawSphere(groundTransform.position, groundRadius);
 	}
 
+	// find a new waypoint from the array of waypoints
 	private void SetNewWaypointTarget()
 	{
 		Transform waypoint = null;
@@ -179,6 +182,7 @@ public class AIController2D : MonoBehaviour, IDamagable
 		targetWaypoint = waypoint;
 	}
 
+	// determine if an enemy was seen
 	private void CheckEnemySeen()
 	{
 		enemy = null;
@@ -190,6 +194,7 @@ public class AIController2D : MonoBehaviour, IDamagable
 		}
 	}
 
+	// apply damage to this character
 	public void Damage(int damageAmount)
 	{
 		health -= damageAmount;
